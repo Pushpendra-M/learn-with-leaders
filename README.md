@@ -411,7 +411,7 @@ Grade a submission (mentors/admins)
 To test the application:
 
 1. Create test users with different roles
-2. Create a program (as admin or mentor)
+2. Create a program as admin
 3. Assign mentors to programs (as admin)
 4. Have students apply to programs
 5. Review applications (as mentor/admin)
