@@ -1,327 +1,245 @@
-# EdTech Platform - Full-Stack Application
+# EdTech Platform - Full-Stack Assignment
 
-A comprehensive React + TypeScript + Supabase application for managing educational programs, students, mentors, applications, and assessments with role-based access control.
+A React + TypeScript + Supabase application for managing educational programs, students, mentors, applications, and assessments.
 
-## 📋 Table of Contents
+## Features
 
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Prerequisites](#prerequisites)
-- [Setup Instructions](#setup-instructions)
-- [Environment Variables](#environment-variables)
-- [Database Setup](#database-setup)
-- [Creating Admin User](#creating-admin-user)
-- [Running the Application](#running-the-application)
-- [Usage Guide](#usage-guide)
-- [API Documentation](#api-documentation)
-- [Architecture](#architecture)
-- [Testing](#testing)
-- [Deployment](#deployment)
-- [Troubleshooting](#troubleshooting)
-
-## ✨ Features
-
-### Core Functionality
-- **Role-based Access Control**: Three user roles (Student, Mentor, Admin) with different permissions
-- **Program Management**: Create, view, and manage educational programs
-- **Application System**: Students can apply to programs; mentors/admins can review and approve/reject
-- **Enrollment Tracking**: Automatic enrollment creation upon application approval
+- **Role-based Access Control**: Students, Mentors, and Admins with different permissions
+- **Program Management**: Create and manage educational programs
+- **Application System**: Students can apply to programs, mentors/admins can review
+- **Enrollment Tracking**: Automatic enrollment upon application approval
 - **Assessment System**: Create assessments, submit work, and grade submissions
-- **User Management**: Admin panel for managing users, roles, and approvals
-- **Row Level Security**: Database-level security with Supabase RLS policies
+- **Row Level Security**: Database-level security with Supabase RLS
 
-### User Roles
+## Tech Stack
 
-#### 👨‍🎓 Students
-- Browse available programs
-- Apply to open programs
-- View application status
-- Submit assessments
-- View grades and feedback
-- Track enrollment status
+- **Frontend**: React 18, TypeScript, Tailwind CSS
+- **Backend**: Supabase (PostgreSQL + Auth + Edge Functions)
+- **State Management**: TanStack Query (React Query)
+- **Routing**: React Router v7
+- **UI**: Tailwind CSS with Lucide React icons
 
-#### 👨‍🏫 Mentors
-- View assigned programs
-- Review applications for assigned programs
-- Approve/reject applications
-- Create and manage assessments
-- Grade student submissions
-- View student progress
-
-#### 👨‍💼 Admins
-- Full access to all features
-- Manage all programs
-- Review all applications
-- Create and manage assessments
-- User management (approve users, change roles, delete users)
-- View system-wide statistics
-
-## 🛠 Tech Stack
-
-### Frontend
-- **React 19** - UI library
-- **TypeScript** - Type safety
-- **Tailwind CSS 4** - Styling
-- **React Router v7** - Routing
-- **TanStack Query (React Query)** - Data fetching and caching
-- **Formik + Yup** - Form handling and validation
-- **Lucide React** - Icons
-- **React Hot Toast** - Notifications
-- **Vite** - Build tool
-
-### Backend
-- **Supabase** - Backend-as-a-Service
-  - PostgreSQL Database
-  - Authentication
-  - Row Level Security (RLS)
-  - Edge Functions
-  - Real-time subscriptions
-
-### Development Tools
-- **ESLint** - Code linting
-- **TypeScript** - Type checking
-- **Supabase CLI** - Database migrations and function deployment
-
-## 📁 Project Structure
+## Project Structure
 
 ```
-my-react-ts-app/
-├── public/                      # Static assets
 ├── src/
-│   ├── assets/                 # Images and static files
-│   ├── components/             # Reusable React components
-│   │   ├── auth/              # Authentication components
-│   │   │   ├── AuthButton.tsx
-│   │   │   ├── AuthHeader.tsx
-│   │   │   ├── AuthLayout.tsx
-│   │   │   ├── AuthLink.tsx
-│   │   │   ├── AuthLogo.tsx
-│   │   │   ├── ErrorMessage.tsx
-│   │   │   ├── FormInput.tsx
-│   │   │   └── SuccessMessage.tsx
-│   │   ├── common/            # Common UI components
-│   │   │   ├── Loading.tsx
-│   │   │   └── MultiSelectAutocomplete.tsx
-│   │   ├── modals/            # Modal components
-│   │   │   ├── CreateAssessmentModal.tsx
-│   │   │   ├── CreateProgramModal.tsx
-│   │   │   └── EditProgramModal.tsx
-│   │   ├── routes/            # Route protection components
-│   │   │   ├── AdminOnlyRoute.tsx
-│   │   │   └── ProtectedRoute.tsx
-│   │   └── sections/          # Page sections
-│   │       ├── ApplicationsReviewSection.tsx
-│   │       └── ProgramSubmissionsSection.tsx
-│   ├── contexts/              # React contexts
-│   │   └── AuthContext.tsx    # Authentication context
-│   ├── hooks/                 # Custom React hooks
-│   │   ├── useAllUsers.ts
-│   │   ├── useApplications.ts
-│   │   ├── useApproveUser.ts
-│   │   ├── useAssessmentAnswers.ts
-│   │   ├── useAssessments.ts
-│   │   ├── useCreateEnrollment.ts
-│   │   ├── useCreateProgram.ts
-│   │   ├── useDeleteUser.ts
-│   │   ├── useEnrollments.ts
+│   ├── components/          # Reusable components
+│   │   ├── auth/           # Authentication components
+│   │   └── ApplicationsReviewSection.tsx
+│   ├── contexts/            # React contexts (AuthContext)
+│   ├── hooks/               # Custom React hooks
 │   │   ├── usePrograms.ts
-│   │   ├── useProgramSubmissions.ts
-│   │   ├── useUpdateProgram.ts
-│   │   ├── useUpdateUserRole.ts
-│   │   ├── useUserProfile.ts
-│   │   ├── constants.ts
-│   │   └── interfaces.ts
-│   ├── lib/                   # Library configurations
-│   │   ├── supabase.ts        # Supabase client
-│   │   └── edgeFunction/      # Edge function utilities
-│   │       ├── client.ts
-│   │       ├── constants.ts
-│   │       ├── jwt.ts
-│   │       ├── request.ts
-│   │       ├── types.ts
-│   │       └── utils.ts
-│   ├── pages/                 # Page components
-│   │   ├── admin/             # Admin pages
-│   │   │   └── users/         # User management
-│   │   ├── applications/      # Applications page
-│   │   ├── assessments/       # Assessment pages
-│   │   ├── auth/              # Authentication pages
-│   │   │   ├── signin/
-│   │   │   ├── signup/
-│   │   │   └── waiting-approval/
-│   │   ├── layout/            # Layout components
-│   │   └── programs/          # Program pages
-│   │       ├── create/
-│   │       ├── detail/
-│   │       └── list/
-│   ├── routes/                # Route definitions
-│   │   ├── index.tsx
-│   │   └── constants.ts
-│   ├── types/                 # TypeScript type definitions
-│   │   └── index.ts
-│   ├── utils/                 # Utility functions
-│   │   └── date.ts
-│   ├── App.tsx                # Main app component
-│   ├── App.css
-│   ├── index.css
-│   └── main.tsx               # Entry point
+│   │   ├── useApplications.ts
+│   │   ├── useEnrollments.ts
+│   │   ├── useAssessments.ts
+│   │   └── useUserProfile.ts
+│   ├── lib/                 # Library configurations
+│   │   └── supabase.ts
+│   ├── pages/               # Page components
+│   │   ├── SignIn.tsx
+│   │   ├── SignUp.tsx
+│   │   ├── Home.tsx
+│   │   ├── ProgramList.tsx
+│   │   ├── ProgramDetail.tsx
+│   │   └── AssessmentDetail.tsx
+│   └── types/               # TypeScript type definitions
 ├── supabase/
-│   ├── functions/             # Supabase Edge Functions
-│   │   ├── approve-application/
-│   │   └── program-management/
-│   └── migrations/            # Database migrations
-│       └── create_admin_user.sql
-├── .env                       # Environment variables (create this)
-├── eslint.config.js
-├── index.html
-├── package.json
-├── tailwind.config.js
-├── tsconfig.json
-├── vite.config.ts
-├── README.md                  # This file
-└── SUBMISSION.md              # Submission documentation
+│   ├── schema.sql          # Database schema with RLS policies
+│   └── functions/          # Edge Functions
+│       └── approve-application/
+└── ARCHITECTURE.md          # Architecture documentation
 ```
 
-## 📋 Prerequisites
+## Setup Instructions
 
-Before you begin, ensure you have the following installed:
+### Prerequisites
 
-- **Node.js** 18+ and npm (or yarn/pnpm)
-- **Git** for version control
-- **Supabase Account** - Sign up at [supabase.com](https://supabase.com)
-- **Supabase CLI** (optional, for local development)
+- Node.js 18+ and npm
+- A Supabase account and project
 
-## 🚀 Setup Instructions
-
-### 1. Clone the Repository
-
-```bash
-git clone <repository-url>
-cd my-react-ts-app
-```
-
-### 2. Install Dependencies
+### 1. Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 3. Set Up Supabase Project
+### 2. Set Up Supabase
 
-1. Go to [supabase.com](https://supabase.com) and create a new project
-2. Wait for the project to be fully provisioned (usually 2-3 minutes)
-3. Note down your project URL and anon key from Settings > API
+1. Create a new Supabase project at [supabase.com](https://supabase.com)
+2. Go to SQL Editor and run the schema from `supabase/schema.sql` (or use the SQL below)
 
-### 4. Configure Environment Variables
+### Database Schema (SQL)
+
+Ensure the following tables exist:
+
+- `profiles`
+- `programs`
+- `program_mentors`
+- `applications`
+- `enrollments`
+- `assessments`
+- `assessment_submissions`
+
+If you are not using `supabase/schema.sql`, run this in Supabase SQL Editor:
+
+```sql
+CREATE TABLE public.profiles (
+  id uuid NOT NULL,
+  full_name text,
+  role text NOT NULL CHECK (role = ANY (ARRAY['student'::text, 'mentor'::text, 'admin'::text])),
+  created_at timestamp with time zone DEFAULT now(),
+  email text UNIQUE,
+  is_approved boolean DEFAULT false,
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT profiles_pkey PRIMARY KEY (id),
+  CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
+);
+
+CREATE TABLE public.programs (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  title text NOT NULL,
+  description text,
+  mentor_id uuid,
+  is_active boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT now(),
+  end_date date,
+  max_students integer,
+  start_date date,
+  status text DEFAULT 'draft'::text,
+  created_by uuid,
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT programs_pkey PRIMARY KEY (id),
+  CONSTRAINT programs_mentor_id_fkey FOREIGN KEY (mentor_id) REFERENCES public.profiles(id),
+  CONSTRAINT programs_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.profiles(id)
+);
+
+CREATE TABLE public.program_mentors (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  program_id uuid NOT NULL,
+  mentor_id uuid NOT NULL,
+  assigned_at timestamp with time zone DEFAULT now(),
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT program_mentors_pkey PRIMARY KEY (id),
+  CONSTRAINT program_mentors_program_id_fkey FOREIGN KEY (program_id) REFERENCES public.programs(id),
+  CONSTRAINT program_mentors_mentor_id_fkey FOREIGN KEY (mentor_id) REFERENCES public.profiles(id)
+);
+
+CREATE TABLE public.applications (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  program_id uuid,
+  student_id uuid,
+  status text DEFAULT 'pending'::text CHECK (status = ANY (ARRAY['pending'::text, 'approved'::text, 'rejected'::text])),
+  created_at timestamp with time zone DEFAULT now(),
+  application_data jsonb DEFAULT '{}'::jsonb,
+  submitted_at timestamp with time zone DEFAULT now(),
+  reviewed_at timestamp with time zone,
+  reviewed_by uuid,
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT applications_pkey PRIMARY KEY (id),
+  CONSTRAINT applications_program_id_fkey FOREIGN KEY (program_id) REFERENCES public.programs(id),
+  CONSTRAINT applications_student_id_fkey FOREIGN KEY (student_id) REFERENCES public.profiles(id),
+  CONSTRAINT applications_reviewed_by_fkey FOREIGN KEY (reviewed_by) REFERENCES public.profiles(id)
+);
+
+CREATE TABLE public.enrollments (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  program_id uuid,
+  student_id uuid,
+  enrolled_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT enrollments_pkey PRIMARY KEY (id),
+  CONSTRAINT enrollments_program_id_fkey FOREIGN KEY (program_id) REFERENCES public.programs(id),
+  CONSTRAINT enrollments_student_id_fkey FOREIGN KEY (student_id) REFERENCES public.profiles(id)
+);
+
+CREATE TABLE public.assessments (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  program_id uuid NOT NULL,
+  title text NOT NULL,
+  description text,
+  created_by uuid NOT NULL,
+  created_at timestamp with time zone DEFAULT now(),
+  due_date date,
+  max_score integer,
+  type text,
+  CONSTRAINT assessments_pkey PRIMARY KEY (id),
+  CONSTRAINT assessments_program_id_fkey FOREIGN KEY (program_id) REFERENCES public.programs(id),
+  CONSTRAINT assessments_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.profiles(id)
+);
+
+CREATE TABLE public.assessment_answers (
+  assessment_id uuid NOT NULL,
+  correct_answer text NOT NULL,
+  grading_notes text,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT assessment_answers_pkey PRIMARY KEY (assessment_id),
+  CONSTRAINT assessment_answers_assessment_id_fkey FOREIGN KEY (assessment_id) REFERENCES public.assessments(id)
+);
+
+CREATE TABLE public.assessment_submissions (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  assessment_id uuid NOT NULL,
+  student_id uuid NOT NULL,
+  submission_data jsonb,
+  score numeric,
+  submitted_at timestamp with time zone DEFAULT now(),
+  status text DEFAULT 'pending'::text CHECK (status = ANY (ARRAY['pending'::text, 'submitted'::text, 'graded'::text])),
+  CONSTRAINT assessment_submissions_pkey PRIMARY KEY (id),
+  CONSTRAINT assessment_submissions_assessment_id_fkey FOREIGN KEY (assessment_id) REFERENCES public.assessments(id),
+  CONSTRAINT assessment_submissions_student_id_fkey FOREIGN KEY (student_id) REFERENCES public.profiles(id)
+);
+```
+
+### 3. Configure Environment Variables
 
 Create a `.env` file in the root directory:
 
 ```env
-VITE_SUPABASE_URL=your-supabase-project-url
+VITE_SUPABASE_URL=your-supabase-url
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+MY_HS256_SECRET=your-shared-hs256-secret
 ```
 
-**Example:**
-```env
-VITE_SUPABASE_URL=https://abcdefghijklmnop.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-```
+Important: This project uses a custom JWT-based auth flow for Edge Functions. The required Supabase Edge Function secret keys are `MY_HS256_SECRET` and `SUPABASE_SERVICE_ROLE_KEY`. The shared secret must match `MY_HS256_SECRET` used by the frontend.
 
-## 🗄 Database Setup
+### 4. Configure Edge Function Secrets
 
-### Option 1: Using Supabase Dashboard (Recommended)
+The `approve-application` Edge Function uses a custom HS256 JWT and requires two secrets in Supabase Edge Function secrets:
 
-1. Go to your Supabase project dashboard
-2. Navigate to **SQL Editor**
-3. Create the necessary tables and policies (if you have a schema.sql file, run it)
-4. Ensure the following tables exist:
-   - `profiles`
-   - `programs`
-   - `program_mentors`
-   - `applications`
-   - `enrollments`
-   - `assessments`
-   - `assessment_submissions`
+- `MY_HS256_SECRET`: Shared secret used to verify custom JWTs.
+- `SUPABASE_SERVICE_ROLE_KEY`: Service role key used by the function to access admin endpoints.
 
-### Option 2: Using Supabase CLI
+Set them in Supabase (Dashboard > Edge Functions > Secrets) or via CLI:
 
 ```bash
-# Install Supabase CLI globally
-npm install -g supabase
-
-# Login to Supabase
-supabase login
-
-# Link your project
-supabase link --project-ref your-project-ref
-
-# Run migrations (if you have migration files)
-supabase db push
+supabase secrets set MY_HS256_SECRET=your-shared-hs256-secret
+supabase secrets set SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
 
-### Database Schema Overview
+Use the same shared secret value for both (`MY_HS256_SECRET`) (client) and (Edge Function).
 
-#### Key Tables
+### 4. Creating Admin User (SQL)
 
-- **profiles**: User profiles with roles (student, mentor, admin) and approval status
-- **programs**: Educational programs with details, dates, and capacity
-- **program_mentors**: Many-to-many relationship between programs and mentors
-- **applications**: Student applications to programs with status tracking
-- **enrollments**: Student enrollments in programs
-- **assessments**: Assessments/assignments for programs
-- **assessment_submissions**: Student submissions for assessments with grading
-
-#### Row Level Security (RLS)
-
-All tables have RLS enabled with policies for:
-- **Students**: Can only view their own data and public/open programs
-- **Mentors**: Can view assigned programs and their students' data
-- **Admins**: Full access to all data
-
-## 👤 Creating Admin User
-
-An admin user is required to manage the platform. Follow these steps to create your first admin user.
-
-### Prerequisites
-
-Before creating an admin user, ensure:
-1. Your database schema is set up (all tables and triggers are created)
-2. The auto-profile trigger is configured to create profiles automatically when users sign up
-3. You have access to the Supabase SQL Editor
-
-### Step-by-Step Instructions
-
-1. **Open Supabase SQL Editor**
-   - Go to your Supabase project dashboard
-   - Navigate to **SQL Editor** in the left sidebar
-   - Click **New Query**
-
-2. **Copy and Paste the Admin Creation Script**
-
-   Copy the following SQL script into the SQL Editor:
+Create the first admin user via SQL. Mentor/student users can sign up through the app UI.
 
 ```sql
 -- ============================================
 -- CREATE ADMIN USER
 -- ============================================
--- This script creates an admin user in the auth.users table
--- and sets up the corresponding profile with admin role
+-- Simple script to create an admin user
+-- Prerequisites: Auto-profile trigger must be set up first
 -- ============================================
 
 DO $$
-
 DECLARE
   new_user_id uuid;
-  user_email text := 'admin1111@example.com';        -- CHANGE THIS: Your admin email
-  user_password text := 'admin1111@example.com';    -- CHANGE THIS: Your admin password
-  user_full_name text := 'System Administrator'; -- CHANGE THIS: Admin's full name
-
+  user_email text := 'admin1111@example.com';        -- CHANGE THIS
+  user_password text := 'admin1111@example.com';    -- CHANGE THIS
+  user_full_name text := 'System Administrator'; -- CHANGE THIS
 BEGIN
-  -- Generate new UUID for the user
+  -- Generate new UUID
   new_user_id := gen_random_uuid();
   
-  -- Create auth user in Supabase Auth
+  -- Create auth user
   INSERT INTO auth.users (
     instance_id,
     id,
@@ -356,8 +274,7 @@ BEGIN
     ''
   );
   
-  -- Update the auto-created profile to admin role
-  -- Note: This assumes the auto-profile trigger has created a profile
+  -- Update the auto-created profile to admin
   UPDATE public.profiles
   SET 
     full_name = user_full_name,
@@ -365,7 +282,6 @@ BEGIN
     is_approved = true
   WHERE id = new_user_id;
   
-  -- Display success message
   RAISE NOTICE '============================================';
   RAISE NOTICE 'Admin user created successfully!';
   RAISE NOTICE 'Email: %', user_email;
@@ -374,381 +290,139 @@ BEGIN
 END $$;
 ```
 
-3. **Update the Credentials**
-
-   **IMPORTANT**: Before running the script, you MUST change these three variables:
-   
-   - `user_email`: Replace `'admin1111@example.com'` with your desired admin email address
-   - `user_password`: Replace `'admin1111@example.com'` with your desired admin password
-   - `user_full_name`: Replace `'System Administrator'` with the admin's full name
-
-   Example:
-   ```sql
-   user_email text := 'admin@yourdomain.com';
-   user_password text := 'SecurePassword123!';
-   user_full_name text := 'John Doe';
-   ```
-
-4. **Run the Script**
-
-   - Click **Run** or press `Ctrl+Enter` (Windows/Linux) or `Cmd+Enter` (Mac)
-   - Check the output panel for success messages
-   - Note the User ID displayed in the output
-
-5. **Verify Admin User**
-
-   - Go to **Authentication > Users** in Supabase dashboard
-   - Verify the new user appears in the list
-   - Go to **Table Editor > profiles**
-   - Verify the user's profile shows:
-     - `role` = `admin`
-     - `is_approved` = `true`
-
-6. **Sign In**
-
-   - Open your application
-   - Navigate to the sign-in page
-   - Use the email and password you set in the script
-   - You should now have full admin access
-
-### Alternative Method: Manual Creation
-
-If you prefer to create the user through the Supabase dashboard:
-
-1. **Create User via Dashboard**
-   - Go to **Authentication > Users** in Supabase dashboard
-   - Click **Add User** or **Invite User**
-   - Enter email and password
-   - Click **Create User**
-
-2. **Update Profile to Admin**
-
-   Run this SQL in the SQL Editor:
-
-```sql
-UPDATE public.profiles 
-SET 
-  role = 'admin', 
-  is_approved = true,
-  full_name = 'System Administrator'  -- Change this to desired name
-WHERE email = 'your-admin-email@example.com';  -- Change this to the email you used
-```
-
-### Security Best Practices
-
-- **Never use default credentials in production**
-- Use a strong password (minimum 12 characters, mix of letters, numbers, and symbols)
-- Store admin credentials securely
-- Consider using environment variables for sensitive values
-- Regularly rotate admin passwords
-- Limit the number of admin users
-
-### Troubleshooting
-
-**Issue**: Profile not found after running script
-- **Solution**: Ensure the auto-profile trigger is set up correctly. You may need to manually create the profile:
-
-```sql
-INSERT INTO public.profiles (id, email, role, is_approved, full_name)
-VALUES (
-  'user-id-from-output',  -- Use the User ID from the script output
-  'your-admin-email@example.com',
-  'admin',
-  true,
-  'System Administrator'
-);
-```
-
-**Issue**: Cannot sign in with admin credentials
-- **Solution**: Verify the email and password match what you set in the script. Check that `email_confirmed_at` is set (the script sets this automatically).
-
-**Issue**: User created but role is not admin
-- **Solution**: Run the UPDATE statement manually:
-
-```sql
-UPDATE public.profiles 
-SET role = 'admin', is_approved = true 
-WHERE email = 'your-admin-email@example.com';
-```
-
-## 🏃 Running the Application
-
-### Development Mode
+### 5. Run the Development Server
 
 ```bash
 npm run dev
 ```
 
-The application will start at `http://localhost:5173`
+The app will be available at `http://localhost:5173`
 
-### Build for Production
-
-```bash
-npm run build
-```
-
-The built files will be in the `dist/` directory.
-
-### Preview Production Build
-
-```bash
-npm run preview
-```
-
-### Linting
-
-```bash
-npm run lint
-```
-
-## 📖 Usage Guide
+## Usage
 
 ### For Students
 
-1. **Sign Up**: Create an account with email and password, select "Student" role
-2. **Wait for Approval**: Your account needs admin approval before you can access the platform
-3. **Browse Programs**: Once approved, view available programs on the Programs page
-4. **Apply to Programs**: Click on a program to view details and submit an application
-5. **Track Applications**: View your application status on the Applications page
-6. **Submit Assessments**: Once enrolled, access assessments and submit your work
-7. **View Grades**: Check your grades and feedback on submitted assessments
+1. Sign up or sign in
+2. Browse available programs on the Programs page
+3. Click on a program to view details
+4. Apply to open programs by filling out the application form
+5. View application status and enrollment status
+6. Once enrolled, view and submit assessments
+7. View grades and feedback on submitted assessments
 
 ### For Mentors
 
-1. **Sign Up**: Create an account with email and password, select "Mentor" role
-2. **Wait for Approval**: Your account needs admin approval
-3. **View Assigned Programs**: See programs you're assigned to as a mentor
-4. **Review Applications**: Review pending applications for your programs
-5. **Approve/Reject**: Approve or reject student applications (approval creates enrollment)
-6. **Create Assessments**: Create assessments for your programs
-7. **Grade Submissions**: Grade student submissions with scores and feedback
+1. Sign in with a mentor account
+2. View programs you're assigned to
+3. Review pending applications for your programs
+4. Approve or reject applications (creates enrollment on approval)
+5. View assessments for your programs
+6. Grade student submissions with scores and feedback
 
 ### For Admins
 
-1. **Sign In**: Use your admin credentials to sign in
-2. **Manage Users**: Go to Admin > Users to:
-   - View all users
-   - Approve/reject user accounts
-   - Change user roles
-   - Delete users
-3. **Manage Programs**: Create, edit, and manage all programs
-4. **Review Applications**: Review all applications across all programs
-5. **Create Assessments**: Create assessments for any program
-6. **Grade Submissions**: Grade any student submission
-7. **Assign Mentors**: Assign mentors to programs
+1. Sign in with an admin account
+2. View all programs
+3. Review all applications
+4. Manage programs, mentors, and students
+5. Create assessments for any program
+6. Grade submissions
 
-## 📚 API Documentation
+## Database Schema
 
-### Custom Hooks
+### Key Tables
 
-#### Authentication
-- `useAuth()` - Get current user, profile, and auth methods
+- **profiles**: User profiles with roles (student, mentor, admin)
+- **programs**: Educational programs
+- **program_mentors**: Many-to-many relationship between programs and mentors
+- **applications**: Student applications to programs
+- **enrollments**: Student enrollments in programs
+- **assessments**: Assessments/assignments for programs
+- **assessment_submissions**: Student submissions for assessments
 
-#### Programs
-- `usePrograms()` - Fetch all programs (filtered by role via RLS)
-- `useProgram(id)` - Fetch a single program with mentors
-- `useMyPrograms()` - Fetch programs relevant to current user
-- `useCreateProgram()` - Create a new program
-- `useUpdateProgram()` - Update an existing program
+### Row Level Security (RLS)
 
-#### Applications
-- `useApplications(programId?)` - Fetch applications (all or for a specific program)
-- `useMyApplications()` - Fetch current user's applications
-- `useCreateApplication()` - Submit a new application
-- `useReviewApplication()` - Approve or reject an application (calls Edge Function)
+All tables have RLS enabled with policies for:
+- **Students**: Can only view their own data and public/open programs
+- **Mentors**: Can view assigned programs and their students' data
+- **Admins**: Full access to all data
 
-#### Enrollments
-- `useEnrollments(programId?)` - Fetch enrollments
-- `useEnrollment(programId)` - Fetch enrollment for current user in a program
-- `useCreateEnrollment()` - Create a new enrollment
+## Edge Functions
 
-#### Assessments
-- `useAssessments(programId)` - Fetch assessments for a program
-- `useAssessment(id)` - Fetch a single assessment
-- `useMySubmission(assessmentId)` - Fetch current user's submission for an assessment
-- `useAssessmentSubmissions(assessmentId)` - Fetch all submissions for an assessment
-- `useSubmitAssessment()` - Submit or update an assessment submission
-- `useGradeSubmission()` - Grade a submission
-
-#### Users
-- `useAllUsers()` - Fetch all users (admin only)
-- `useUserProfile(userId?)` - Fetch user profile
-- `useApproveUser()` - Approve a user account
-- `useUpdateUserRole()` - Update user role
-- `useDeleteUser()` - Delete a user
-
-### Edge Functions
-
-#### `approve-application`
+### `approve-application`
 
 Handles application approval/rejection workflow:
-- **Endpoint**: `/functions/v1/approve-application`
-- **Method**: POST
-- **Authentication**: Required (JWT token)
-- **Permissions**: Admin or assigned mentor
-- **Functionality**:
-  - Validates user permissions
-  - Updates application status
-  - Creates enrollment on approval
-  - Checks program capacity before enrolling
+- Validates user permissions (admin or mentor assigned to program)
+- Updates application status
+- Creates enrollment on approval
+- Checks program capacity before enrolling
 
-## 🏗 Architecture
+## API Documentation
 
-### Frontend Architecture
+### Hooks
 
-- **Component-based**: Modular React components
-- **Context API**: Global state management for authentication
-- **React Query**: Server state management and caching
-- **TypeScript**: Type safety throughout
-- **Tailwind CSS**: Utility-first styling
+#### `usePrograms()`
+Fetch all programs (filtered by role via RLS)
 
-### Backend Architecture
+#### `useProgram(id)`
+Fetch a single program with mentors
 
-- **Supabase**: Backend-as-a-Service
-- **PostgreSQL**: Relational database
-- **Row Level Security**: Database-level access control
-- **Edge Functions**: Serverless functions for complex operations
-- **Real-time**: Built-in real-time subscriptions
+#### `useMyPrograms()`
+Fetch programs relevant to current user (enrolled/assigned/all based on role)
 
-### Security
+#### `useApplications(programId?)`
+Fetch applications (all or for a specific program)
 
-- **Authentication**: Supabase Auth with JWT tokens
-- **Authorization**: Role-based access control (RBAC)
-- **Row Level Security**: Database-level security policies
-- **Input Validation**: Form validation with Yup
-- **Type Safety**: TypeScript prevents type-related errors
+#### `useMyApplications()`
+Fetch current user's applications
 
-## 🧪 Testing
+#### `useCreateApplication()`
+Submit a new application
 
-### Manual Testing Checklist
+#### `useReviewApplication()`
+Approve or reject an application (calls Edge Function)
 
-- [ ] Students can sign up and wait for approval
-- [ ] Admins can approve/reject users
-- [ ] Students can view and apply to programs
-- [ ] Mentors can review applications for assigned programs
-- [ ] Admins can review all applications
-- [ ] Enrollments are created automatically on approval
-- [ ] Students can submit assessments
-- [ ] Mentors/Admins can grade submissions
-- [ ] RLS policies enforce security correctly
-- [ ] Edge Function handles approval workflow
+#### `useEnrollments(programId?)`
+Fetch enrollments
 
-### Testing Different Roles
+#### `useEnrollment(programId)`
+Fetch enrollment for current user in a program
 
-1. **Create Test Users**:
-   - Create users with different roles via signup or admin panel
-   - Approve them via admin panel
+#### `useAssessments(programId)`
+Fetch assessments for a program
 
-2. **Test Student Flow**:
-   - Sign in as student
-   - Apply to a program
-   - Submit an assessment
-   - View grades
+#### `useAssessment(id)`
+Fetch a single assessment
 
-3. **Test Mentor Flow**:
-   - Sign in as mentor
-   - Get assigned to a program (via admin)
-   - Review applications
-   - Create assessments
-   - Grade submissions
+#### `useMySubmission(assessmentId)`
+Fetch current user's submission for an assessment
 
-4. **Test Admin Flow**:
-   - Sign in as admin
-   - Manage users
-   - Create programs
-   - Assign mentors
-   - Review all applications
-   - Create assessments
-   - Grade submissions
+#### `useAssessmentSubmissions(assessmentId)`
+Fetch all submissions for an assessment (mentors/admins)
 
-## 🚢 Deployment
+#### `useSubmitAssessment()`
+Submit or update an assessment submission
 
-### Frontend Deployment
+#### `useGradeSubmission()`
+Grade a submission (mentors/admins)
 
-#### Vercel
+## Testing
 
-1. Install Vercel CLI: `npm i -g vercel`
-2. Run: `vercel`
-3. Add environment variables in Vercel dashboard
+To test the application:
 
-#### Netlify
+1. Create test users with different roles
+2. Create a program (as admin or mentor)
+3. Assign mentors to programs (as admin)
+4. Have students apply to programs
+5. Review applications (as mentor/admin)
+6. Create assessments (as mentor/admin)
+7. Submit assessments (as enrolled student)
+8. Grade submissions (as mentor/admin)
 
-1. Install Netlify CLI: `npm i -g netlify-cli`
-2. Run: `netlify deploy --prod`
-3. Add environment variables in Netlify dashboard
-
-#### Other Platforms
-
-1. Build the app: `npm run build`
-2. Deploy the `dist/` directory to your hosting platform
-3. Ensure environment variables are set
-
-### Backend Deployment
-
-The backend is already deployed on Supabase. Ensure:
-- Edge Functions are deployed: `supabase functions deploy approve-application`
-- RLS policies are active
-- Database migrations are applied
-
-### Environment Variables
-
-Make sure to set these in your production environment:
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_ANON_KEY`
-
-## 🔧 Troubleshooting
-
-### Common Issues
-
-#### 1. "Missing Supabase environment variables"
-- **Solution**: Create a `.env` file with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
-
-#### 2. "User not found" or Profile issues
-- **Solution**: Ensure the auto-profile trigger is set up in your database
-- Check that profiles are being created automatically on signup
-
-#### 3. "Permission denied" errors
-- **Solution**: Verify RLS policies are correctly set up
-- Check user role and permissions
-- Ensure user is approved (for non-admin users)
-
-#### 4. Edge Function not working
-- **Solution**: Ensure the function is deployed: `supabase functions deploy approve-application`
-- Check function logs in Supabase dashboard
-- Verify JWT token is being sent correctly
-
-#### 5. Build errors
-- **Solution**: Clear node_modules and reinstall: `rm -rf node_modules && npm install`
-- Check TypeScript errors: `npm run lint`
-- Ensure all dependencies are installed
-
-### Getting Help
-
-1. Check the Supabase documentation: [supabase.com/docs](https://supabase.com/docs)
-2. Review the code comments and type definitions
-3. Check browser console for errors
-4. Review Supabase logs in the dashboard
-
-## 📝 Notes
+## Notes
 
 - The schema includes a trigger to automatically create profiles when users sign up
 - RLS policies ensure data security at the database level
-- Edge Functions handle complex business logic (approval workflow)
+- The Edge Function handles complex business logic (approval workflow)
 - TanStack Query provides caching and automatic refetching
 - All components are type-safe with TypeScript
-- The application uses React 19 with the latest features
-
-## 📄 License
-
-This is an assignment project for Learn with Leaders.
-
-## 🙏 Acknowledgments
-
-- Built with [React](https://react.dev/)
-- Powered by [Supabase](https://supabase.com/)
-- Styled with [Tailwind CSS](https://tailwindcss.com/)
-- Icons by [Lucide](https://lucide.dev/)
-
----
-
-**Last Updated**: January 2025
