@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@theme {
+  --font-family-sans: system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+:root {
+  font-family: var(--font-family-sans);
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+#root {
+  height: 100%;
+  overflow-y: auto;
+}
